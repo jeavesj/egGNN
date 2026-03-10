@@ -21,7 +21,8 @@ def preprocess(ligand: str, protein: str):
     """construct the graph"""
     constructor = ConstructGraph()
     #  ligand, _ = load_molecule(ligand)
-    ligand = Chem.MolFromSmiles(ligand)
+    with open(ligand) as f:
+        ligand = Chem.MolFromSmiles(f.read().strip())
     protein, protein_coords = load_molecule(protein)
     ligand_graph = constructor.construct_ligand_graph(ligand, add_self_loop=False, num_virtual_nodes=0)
     protein_graph = constructor.construct_pocket_graph(protein, protein_coords, cutoff=11)
@@ -36,6 +37,11 @@ def run_egGNN(args):
     # run model
     device = torch.device(f'cuda:{args.gpu}' if torch.cuda.is_available() else 'cpu')
     model = torch.load(os.path.join(CWD, 'checkpoint/16-8596.sav'), map_location=device)
+    for m in model.modules():
+        if isinstance(m, torch.nn.GELU) and not hasattr(m, 'approximate'):
+            m.approximate = 'none'
+        if isinstance(m, torch.nn.ParameterList) and not hasattr(m, '_size'):
+            m._size = len(m._parameters)
     model.eval()
 
     affinity = model((ligand, protein), device)[0].item()
