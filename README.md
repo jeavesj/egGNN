@@ -20,6 +20,9 @@ Install packages by:
 pip install -r requirements.txt
 ```
 
+NOTE:  
+To generate smiles from SDFs, [DEAttentionDTA](https://github.com/whatamazing1/DEAttentionDTA) provides a great script in `pre-code/sdf_to_smi.py`!
+
 Run:
 ```bash
 ./run_ligpro.py --ligand SMILES --protein **.pdb --gpu GPU_NUM
