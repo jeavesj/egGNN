@@ -9,24 +9,30 @@ import argparse
 
 from egGNN.model import *
 from egGNN.egGNN_pipeline import run_egGNN
-
+import time
 
 def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('--ligand', type=str, help='the ligand path (absolute)')
     parser.add_argument('--protein', type=str, help='the protein path (absolute)')
     parser.add_argument('--gpu', type=int, default=0, help='the gpu num you use')
+    parser.add_argument('--out_csv', type=str, required=True, help='Path to write predictions and times')
 
     args = parser.parse_args()
     return args
 
 
 def run(args):
+    t0 = time.time()
     affinity = run_egGNN(args)
-
-    # delete
-    with open('eggnn', 'a') as f:
-        f.write(f"{args.ligand_name.split('_')[0]},{affinity}\n")
+    t1 = time.time() - t0
+    
+    if not os.path.exists(args.out_csv):
+        with open(args.out_csv, 'w') as f:
+            f.write(f'pdbid,pK_predicted,t_tot_s\n')
+        
+    with open(args.out_csv, 'a') as f:
+        f.write(f"{args.ligand_name.split('_')[0]},{affinity},{t1}\n")
 
 
 if __name__ == '__main__':
