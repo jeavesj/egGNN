@@ -22,7 +22,21 @@ def get_parser():
     return args
 
 
+def already_done(args):
+    if not os.path.exists(args.out_csv):
+        return False
+    pdbid = args.ligand_name.split('_')[0]
+    with open(args.out_csv) as f:
+        for line in f:
+            if line.startswith(pdbid + ','):
+                return True
+    return False
+
+
 def run(args):
+    if already_done(args):
+        print(f"Skipping {args.ligand_name}, already in {args.out_csv}")
+        return
     t0 = time.time()
     affinity = run_egGNN(args)
     t1 = time.time() - t0
