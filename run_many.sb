@@ -15,7 +15,7 @@ conda activate eggnn
 
 BASE_DIR="/mnt/scratch/jeaves/egGNN"
 CSV_PATH="${BASE_DIR}/casf2016_smiles_seqs_cleaned.csv"
-OUT_CSV="${BASE_DIR}/casf2016_egGNN_preds_and_times.csv"
+OUT_CSV="${BASE_DIR}/ckpt8596-pocket_casf2016_egGNN_preds_and_times.csv"
 
 echo "pdbid,pK_predicted,t_inf_s" > "$OUT_CSV"
 
@@ -24,7 +24,7 @@ while IFS=',' read -r pdbid smiles sequence || [[ -n "$pdbid" ]]; do
     pdbid="${pdbid//\"/}"
     pdbid="$(echo "$pdbid" | xargs)"
 
-    protein="${BASE_DIR}/coreset/${pdbid}/${pdbid}_protein.pdb"
+    protein="${BASE_DIR}/coreset/${pdbid}/${pdbid}_pocket.pdb"
     ligand="${BASE_DIR}/coreset/${pdbid}/${pdbid}_ligand.smi"
 
     python3 run_egGNN.py --protein "$protein" --ligand "$ligand" --out_csv "$OUT_CSV"
