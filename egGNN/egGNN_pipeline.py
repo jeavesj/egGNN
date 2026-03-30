@@ -22,7 +22,14 @@ def preprocess(ligand: str, protein: str):
     constructor = ConstructGraph()
     #  ligand, _ = load_molecule(ligand)
     with open(ligand) as f:
-        ligand = Chem.MolFromSmiles(f.read().strip())
+        smiles = f.read().split()[0]
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None:
+        sdf_path = ligand.replace('.smi', '.sdf')
+        mol = Chem.MolFromMolFile(sdf_path, sanitize=False)
+        if mol is not None:
+            Chem.SanitizeMol(mol, catchErrors=True)
+    ligand = mol
     protein, protein_coords = load_molecule(protein)
     ligand_graph = constructor.construct_ligand_graph(ligand, add_self_loop=False, num_virtual_nodes=0)
     protein_graph = constructor.construct_pocket_graph(protein, protein_coords, cutoff=11)
