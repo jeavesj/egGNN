@@ -1,7 +1,5 @@
-dgl-cu111
 torch
 numpy
 pandas
 scipy
-sklearn
 dgllife
